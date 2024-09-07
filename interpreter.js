@@ -4,6 +4,14 @@ function runBrainfuck() {
     let pointer = 0;
     let output = '';
 
+    const parseNumber = (str) => {
+        let match = str.match(/^(\+)(\d*)/);
+        if (match) {
+            return parseInt(match[2] || '1', 10);
+        }
+        return 1;
+    };
+
     for (let i = 0; i < code.length; i++) {
         switch (code[i]) {
             case '>':
@@ -13,10 +21,13 @@ function runBrainfuck() {
                 pointer--;
                 break;
             case '+':
-                memory[pointer]++;
+                let increment = parseNumber(code.slice(i));
+                memory[pointer] = (memory[pointer] + increment) % 256;
+                while (i < code.length && code[i] === '+') i++;
+                i--;
                 break;
             case '-':
-                memory[pointer]--;
+                memory[pointer] = (memory[pointer] - 1 + 256) % 256;
                 break;
             case '.':
                 output += String.fromCharCode(memory[pointer]);
